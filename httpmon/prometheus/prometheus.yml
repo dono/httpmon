@@ -1,0 +1,25 @@
+global:
+  scrape_interval:     15s # Set the scrape interval to every 15 seconds. Default is every 1 minute.
+  evaluation_interval: 15s # Evaluate rules every 15 seconds. The default is every 1 minute.
+
+
+# A scrape configuration containing exactly one endpoint to scrape:
+scrape_configs:
+  - job_name: 'http_prober'
+    metrics_path: '/metrics'
+    scheme: 'http'
+    params:
+      timeout: [10]  # Timeout for fetching to target URL(sec)
+
+    static_configs:
+    - targets:
+      - https://example.com      # Target to probe with https.
+      - https://www.google.co.jp # Target to probe with http on port 8080.
+
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: __param_target
+      - source_labels: [__param_target]
+        target_label: instance
+      - target_label: __address__
+        replacement: http_exporter:8888  # http_exporter's real hostname:port.

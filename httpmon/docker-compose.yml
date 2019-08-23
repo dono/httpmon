@@ -1,0 +1,38 @@
+version: '2'
+
+services:
+
+  prometheus:
+    image: prom/prometheus
+    container_name: prometheus
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus-data:/etc/prometheus/data
+    ports:
+      - 9090:9090
+
+  grafana:
+    image: grafana/grafana
+    container_name: grafana
+    volumes:
+      - grafana-data:/var/lib/grafana
+    ports:
+      - 3000:3000
+
+  exporter:
+    build:
+      context: ./http_exporter
+      args:
+        http_proxy: ""
+        https_proxy: ""
+    image: int-ono/http_exporter
+    container_name: http_exporter
+    ports:
+      - 8888:8888
+
+
+volumes:
+  prometheus-data:
+    driver: local
+  grafana-data:
+    driver: local
